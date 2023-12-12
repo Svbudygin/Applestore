@@ -4,45 +4,56 @@ import os
 from config import headers, cookies, id_parsing, prices_parsing, descripion_parsing
 from math import ceil
 
+description = {}
+ids = {}
+prices = {}
+sess = requests.Session()
+
+
+def parsing_function_ids(offset='0'):
+    params = id_parsing(offset)
+    response = sess.get('https://www.mvideo.ru/bff/products/listing', params=params, cookies=cookies,
+                        headers=headers).json()
+    return response
+
+
+def parsing_function_description(product_ids):
+    json_data = descripion_parsing(product_ids)
+
+    response = sess.post('https://www.mvideo.ru/bff/product-details/list', cookies=cookies, headers=headers,
+                         json=json_data).json()
+    return response
+
+
+def parsing_function_prices(product_ids):
+    product_ids_str = ','.join(product_ids)
+    params, headers1 = prices_parsing(product_ids_str)
+    try:
+        response_price = sess.get('https://www.mvideo.ru/bff/products/prices', params=params, cookies=cookies,
+                                  headers=headers1).json()
+        return response_price
+    except requests.exceptions.JSONDecodeError:
+        return None
+
 
 def get_data():
     if not os.path.exists('data'):
         os.mkdir('data')
 
-    params = id_parsing()
-    # echo -n 'WyJ0b2xrby12LW5hbGljaGlpIiwiLTEyIiwiZGEiXQ==' | base64 -d
-    sess = requests.Session()
-    response = sess.get('https://www.mvideo.ru/bff/products/listing', params=params, cookies=cookies,
-                        headers=headers).json()
-    total_number_of_items = response.get('body').get('total')
+    total_number_of_items = parsing_function_ids().get('body').get('total')
     if total_number_of_items is None:
         return 'Товары не найдены!'
     pages = ceil(total_number_of_items / 24)
 
-    description = {}
-    ids = {}
-    prices = {}
     for page in range(pages):
-        offset = str(page * 24)
-        params = id_parsing(offset=offset)
-        response = sess.get('https://www.mvideo.ru/bff/products/listing', params=params, cookies=cookies,
-                            headers=headers).json()
-        product_ids = response.get('body').get('products')
+        product_ids = parsing_function_ids(offset=str(page * 24)).get('body').get('products')
         ids[page] = product_ids
         # ------ next block: prices
-        product_ids_str = ','.join(product_ids)
-        params, headers1 = prices_parsing(product_ids_str)
-        try:
-            response_price = sess.get('https://www.mvideo.ru/bff/products/prices', params=params, cookies=cookies,
-                                      headers=headers1).json()
-        except requests.exceptions.JSONDecodeError:
+        response_price = parsing_function_prices(product_ids)
+        if response_price is None:
             continue
         # ------ next block: description
-        json_data = descripion_parsing(product_ids)
-
-        response = sess.post('https://www.mvideo.ru/bff/product-details/list', cookies=cookies, headers=headers,
-                             json=json_data).json()
-        description[page] = response
+        description[page] = parsing_function_description(product_ids)
         # ------ back to block: prices
         material_prices = response_price.get('body').get('materialPrices')
 
