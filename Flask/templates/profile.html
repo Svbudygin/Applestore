@@ -16,24 +16,32 @@
 Productpage
 {% endblock %}
 {% block body %}
-<div class="modal fade lug" id="myModal" role="dialog">
-    <div class="modal-dialog">
-        <!-- Modal content-->
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Change</h4>
-            </div>
-            <div class="modal-body">
-                <ul>
-                    <li><a href="#"><img src="../static/images/flag-up-1.png" alt=""/> United States</a></li>
-                    <li><a href="#"><img src="../static/images/flag-up-2.png" alt=""/> France </a></li>
-                </ul>
-            </div>
-        </div>
-    </div>
-</div>
-
+<!--<div class="modal fade lug" id="myModal" role="dialog">-->
+<!--    <div class="modal-dialog">-->
+<!--        &lt;!&ndash; Modal content&ndash;&gt;-->
+<!--        <div class="modal-content">-->
+<!--            <div class="modal-header">-->
+<!--                <button type="button" class="close" data-dismiss="modal">&times;</button>-->
+<!--                <h4 class="modal-title">Change</h4>-->
+<!--            </div>-->
+<!--            <div class="modal-body">-->
+<!--                <ul>-->
+<!--                    <li><a href="#"><img src="../static/images/flag-up-1.png" alt=""/> United States</a></li>-->
+<!--                    <li><a href="#"><img src="../static/images/flag-up-2.png" alt=""/> France </a></li>-->
+<!--                </ul>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+{% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                        <ul class="flashes">
+                            {% for message in messages %}
+                            <li>{{ message }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                        {% endwith %}
 <div class="furniture-box">
     <div class="container">
         <div class="row">
@@ -223,22 +231,27 @@ Productpage
                                                 <div class="col-md-6 col-sm-8">
                                                     <div class="small-box-c">
                                                         <div class="small-img-b">
-                                                            <a href="/productpage"><img src="../static/images/tr1.png"
-                                                                                        alt="#"/></a>
+                                                            <a href="/productpage?ID={{product['productId']}}"><img
+                                                                    src="../static/images/tr1.png"
+                                                                    alt="#"/></a>
                                                         </div>
                                                         <div class="dit-t clearfix">
                                                             <div class="left-ti">
-                                                                <p>{{product[1]}}</p>
+                                                                <p>{{product["modelName"]}}</p>
                                                             </div>
-                                                            <a href="/productpage" tabindex="0">{{product[2]}}₽</a>
+                                                            <a href="/productpage" tabindex="0">{{product["salePrice"]}}₽</a>
                                                         </div>
-                                                        <div class="prod-btn">
-                                                            <a href="/productpage"><i class="fa fa-star"
-                                                                                      aria-hidden="true"></i>
-                                                                {{product[0]}}</a>
-                                                            <a href="/productpage"><i class="fa fa-thumbs-up"
-                                                                                      aria-hidden="true"></i>Like</a>
-                                                        </div>
+                                                        <form action="{{url_for('profile')}}" method="post">
+                                                            <div class="prod-btn">
+                                                                <a href="#"><i class="fa fa-star"
+                                                                               aria-hidden="true"></i>
+                                                                    {{product['rating']}}</a>
+                                                                <button type="submit" name="like_button"
+                                                                        value="{{ product['productId'] }}">
+                                                                    <i class="fa fa-thumbs-up" aria-hidden="true"></i>Like
+                                                                </button>
+                                                            </div>
+                                                        </form>
                                                     </div>
                                                 </div>
                                                 {% endfor %}
@@ -246,6 +259,26 @@ Productpage
                                             </div>
 
                                         </div>
+                                        <script>
+                                            $(document).ready(function () {
+                                                $("#likeButton").on("click", function () {
+                                                    var productId = $(this).val();
+
+                                                    $.ajax({
+                                                        type: "POST",
+                                                        url: "{{url_for('profile')}}",
+                                                        data: {like_button: productId},
+                                                        success: function (response) {
+                                                            // Handle the response if needed
+                                                            console.log(response);
+                                                        },
+                                                        error: function (error) {
+                                                            console.error("Error:", error);
+                                                        }
+                                                    });
+                                                });
+                                            });
+                                        </script>
 
                                         <div class="tab-pane fade" id="tab3default">Default 3</div>
                                         <div class="tab-pane fade" id="tab4default">Default 4</div>

@@ -1,6 +1,6 @@
 import json
 from typing import List
-
+import re
 from googletrans import Translator
 
 
@@ -13,12 +13,11 @@ class Filter:
 
     def get_rating_modelName_salePrice(self, brandName, shortage, CPU, Display, diagonal,
                                        guarantee):
-        print("get_rating_modelName_salePrice",brandName, shortage, CPU, Display, diagonal,
-                                       guarantee )
         with open('/Users/sergeybudygin/PycharmProjects/Market/Flask/utils/perfectdata.json') as file:
             data = json.load(file)
         lst_products = []
-        for product in data:
+        for i in data:
+            product = data[i]
             if len(brandName) > 0 and not self.check_extra(product, "brandName", brandName):
                 continue
             elif len(shortage) > 0 and not self.check_extra(product, "shortage", shortage):
@@ -35,7 +34,10 @@ class Filter:
                 rating = product.get('rating')
                 modelName = product.get('modelName')[:30]
                 salePrice = product.get('salePrice')
-                lst_products.append([rating, modelName, salePrice])
+                productId = product.get('productId')
+                lst_products.append(
+                    {"rating": rating, "modelName": modelName, "salePrice": salePrice, "productId": productId})
+
         return lst_products
 
     @staticmethod
@@ -44,17 +46,18 @@ class Filter:
             data = json.load(file)
         lst = set()
         for product in data:
+            product = data[product]
             lst.add(product.get("extra").get(name))
         return lst
 
     @staticmethod
     def sorted_by_price(lst: list, decrease: bool = True):
-        lst = sorted(lst, key=lambda x: x[-1], reverse=decrease)
+        lst = sorted(lst, key=lambda x: x["salePrice"], reverse=decrease)
         return lst
 
     @staticmethod
     def sorted_by_name(lst: list, decrease: bool = True):
-        lst = sorted(lst, key=lambda x: x[1], reverse=decrease)
+        lst = sorted(lst, key=lambda x: x["modelName"], reverse=decrease)
         return lst
 
     @staticmethod
@@ -76,12 +79,21 @@ class Filter:
 
     @staticmethod
     def sorted_by_rating(lst: list, decrease: bool = True):
-        print(lst)
+
         if decrease:
-            lst = sorted(lst, key=lambda x: 0 if x[0] == '-' else x[0], reverse=decrease)
+            lst = sorted(lst, key=lambda x: 0 if x['rating'] == '-' else x['rating'], reverse=decrease)
         else:
-            lst = sorted(lst, key=lambda x: 5 if x[0] == '-' else x[0], reverse=decrease)
+            lst = sorted(lst, key=lambda x: 5 if x['rating'] == '-' else x['rating'], reverse=decrease)
         return lst
+
+    @staticmethod
+    def check_email(email):
+        return re.match(r"[a-zA-Z0-9._%+-]+@[a-zA-Z.-]+\.[a-zA-Z]{2,}", email)
+
+    @staticmethod
+    def get_perfect_search(search, lst):
+        return list(filter(
+            lambda x: search.lower().replace(" ", '') in x.get('modelName').lower().replace(" ", ''), lst))
 
 
 if __name__ == '__main__':
