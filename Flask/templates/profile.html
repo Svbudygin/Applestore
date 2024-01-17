@@ -1,0 +1,309 @@
+{% extends 'base.html' %}
+{% block style %}
+<!--<meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<style>
+    .panel-body {
+        cursor: pointer;
+    }
+
+    .panel-body:hover {
+        background-color: #eee;
+    }
+</style>
+{% endblock %}
+{% block title %}
+Productpage
+{% endblock %}
+{% block body %}
+<!--<div class="modal fade lug" id="myModal" role="dialog">-->
+<!--    <div class="modal-dialog">-->
+<!--        &lt;!&ndash; Modal content&ndash;&gt;-->
+<!--        <div class="modal-content">-->
+<!--            <div class="modal-header">-->
+<!--                <button type="button" class="close" data-dismiss="modal">&times;</button>-->
+<!--                <h4 class="modal-title">Change</h4>-->
+<!--            </div>-->
+<!--            <div class="modal-body">-->
+<!--                <ul>-->
+<!--                    <li><a href="#"><img src="../static/images/flag-up-1.png" alt=""/> United States</a></li>-->
+<!--                    <li><a href="#"><img src="../static/images/flag-up-2.png" alt=""/> France </a></li>-->
+<!--                </ul>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+{% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                        <ul class="flashes">
+                            {% for message in messages %}
+                            <li>{{ message }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                        {% endwith %}
+<div class="furniture-box">
+    <div class="container">
+        <div class="row">
+            <div class="furniture-main">
+                <h2></h2>
+                <div class="col-md-3 col-sm-4">
+                    <div class="furniture-left">
+                        <h3>Filters</h3>
+                        <form id="brandForm" method="GET" action="/profile">
+                            <div class="by-com">
+                                <h5>By brand</h5>
+                                <div class="list-b">
+                                    <div id="brand">
+                                        {% for product in all_brandName %}
+                                        <div class="form-check">
+                                            <input id="{{product}}" class="filled-in chk-col-blue" type="checkbox"
+                                                   name="brand" value="{{product}}">
+                                            <label for="{{product}}">
+                                                {{product}}
+                                            </label>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="by-com">
+                                <h5>By shortage</h5>
+                                <div class="list-b">
+                                    <div id="shortage">
+                                        {% for product in all_shortage %}
+                                        <div class="form-check">
+                                            <input id="{{product}}" class="filled-in chk-col-blue" type="checkbox"
+                                                   name="shortage" value="{{product}}">
+                                            <label for="{{product}}">
+                                                {{product}}
+                                            </label>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="by-com">
+                                <h5>By CPU</h5>
+                                <div class="list-b">
+                                    <div id="CPU">
+                                        {% for product in all_CPU %}
+                                        <div class="form-check">
+                                            <input id="{{product}}" class="filled-in chk-col-blue" type="checkbox"
+                                                   name="CPU" value="{{product}}">
+                                            <label for="{{product}}">
+                                                {{product}}
+                                            </label>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="by-com">
+                                <h5>By diagonal</h5>
+                                <div class="list-b">
+                                    <div id="diagonal">
+                                        {% for product in all_diagonal %}
+                                        <div class="form-check">
+                                            <input id="{{product}}" class="filled-in chk-col-blue" type="checkbox"
+                                                   name="diagonal" value="{{product}}">
+                                            <label for="{{product}}">
+                                                {{product}}
+                                            </label>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="by-com">
+                                <h5>By guarantee</h5>
+                                <div class="list-b">
+                                    <div id="guarantee">
+                                        {% for product in all_guarantee %}
+                                        <div class="form-check">
+                                            <input id="{{product}}" class="filled-in chk-col-blue" type="checkbox"
+                                                   name="guarantee" value="{{product}}">
+                                            <label for="{{product}}">
+                                                {{product}}
+                                            </label>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="by-com">
+                                <h5>By display</h5>
+                                <div class="list-b">
+                                    <div id="Display">
+                                        {% for product in all_Display %}
+                                        <div class="form-check">
+                                            <input id="{{product}}" class="filled-in chk-col-blue" type="checkbox"
+                                                   name="display" value="{{product}}">
+                                            <label for="{{product}}">
+                                                {{product}}
+                                            </label>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="submit">Apply</button>
+                        </form>
+
+                        <div class="left-list-f">
+                            <div class="panel-group" id="accordion">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h4 data-toggle="collapse" data-parent="#accordion" href="#collapse1"
+                                            class="panel-title expand">
+                                            <div class="right-arrow pull-right"><span class="caret"></span></div>
+                                            <a href="#">Sort by</a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapse1" class="panel-collapse collapse">
+                                        <div class="panel-body" data-sort-option="price-increasing">
+                                            Price increasing
+                                        </div>
+                                        <div class="panel-body" data-sort-option="price-decreasing">
+                                            Price decreasing
+                                        </div>
+                                        <div class="panel-body" data-sort-option="good-rating">
+                                            Good rating
+                                        </div>
+                                        <div class="panel-body" data-sort-option="bad-rating">
+                                            Bad rating
+                                        </div>
+                                        <div class="panel-body" data-sort-option="from-a-to-z">
+                                            From a to z
+                                        </div>
+                                        <div class="panel-body" data-sort-option="from-z-to-a">
+                                            From z to a
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <script>
+                            $(document).ready(function () {
+                                $(".panel-body").click(function () {
+                                    var selectedOption = $(this).data("sort-option");
+
+                                    $.ajax({
+                                        type: "POST",
+                                        url: "/profile",
+                                        data: {option: selectedOption},
+                                        success: function (response) {
+                                            // Обновление содержимого div с продуктами
+                                            $(".product-box-main").html(response);
+                                        },
+                                        error: function (error) {
+                                            console.log(error);
+                                        }
+                                    });
+                                });
+                            });
+
+                        </script>
+
+                    </div>
+                </div>
+                <div class="col-md-9 col-sm-12">
+                    <div class="col-md-10 col-sm-8">
+                        <div class="profile-pro-right">
+                            <div class="panel with-nav-tabs panel-default">
+                                <div class="panel-heading clearfix">
+                                    <ul class="nav nav-tabs pull-left">
+                                        <li class="active"><a href="#tab1default" data-toggle="tab">Products
+                                            <span>{{lst|length}}</span></a></li>
+                                    </ul>
+
+                                </div>
+                                <div class="panel-body1">
+                                    <div class="tab-content">
+                                        <div class="tab-pane fade in active" id="tab1default">
+                                            <div class="product-box-main row">
+                                                {% for product in lst %}
+                                                <div class="col-md-6 col-sm-8">
+                                                    <div class="small-box-c">
+                                                        <div class="small-img-b">
+                                                            <a href="/productpage?ID={{product['productId']}}"><img
+                                                                    src="../static/images/tr1.png"
+                                                                    alt="#"/></a>
+                                                        </div>
+                                                        <div class="dit-t clearfix">
+                                                            <div class="left-ti">
+                                                                <p>{{product["modelName"]}}</p>
+                                                            </div>
+                                                            <a href="/productpage" tabindex="0">{{product["salePrice"]}}₽</a>
+                                                        </div>
+                                                        <form action="{{url_for('profile')}}" method="post">
+                                                            <div class="prod-btn">
+                                                                <a href="#"><i class="fa fa-star"
+                                                                               aria-hidden="true"></i>
+                                                                    {{product['rating']}}</a>
+                                                                <button type="submit" name="like_button"
+                                                                        value="{{ product['productId'] }}">
+                                                                    <i class="fa fa-thumbs-up" aria-hidden="true"></i>Like
+                                                                </button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                                {% endfor %}
+
+                                            </div>
+
+                                        </div>
+                                        <script>
+                                            $(document).ready(function () {
+                                                $("#likeButton").on("click", function () {
+                                                    var productId = $(this).val();
+
+                                                    $.ajax({
+                                                        type: "POST",
+                                                        url: "{{url_for('profile')}}",
+                                                        data: {like_button: productId},
+                                                        success: function (response) {
+                                                            // Handle the response if needed
+                                                            console.log(response);
+                                                        },
+                                                        error: function (error) {
+                                                            console.error("Error:", error);
+                                                        }
+                                                    });
+                                                });
+                                            });
+                                        </script>
+
+                                        <div class="tab-pane fade" id="tab3default">Default 3</div>
+                                        <div class="tab-pane fade" id="tab4default">Default 4</div>
+                                        <div class="tab-pane fade" id="tab5default">Default 5</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="loding-box">
+                    <a href="#">
+                        <div class="sk-wave">
+                            <div class="sk-rect sk-rect1"></div>
+                            <div class="sk-rect sk-rect2"></div>
+                            <div class="sk-rect sk-rect3"></div>
+                            <div class="sk-rect sk-rect4"></div>
+                            <div class="sk-rect sk-rect5"></div>
+                        </div>
+                        <span>Loding more awesome products...</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
